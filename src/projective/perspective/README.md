@@ -4,60 +4,6 @@
 
 2D perspective transformation using **partial affine** (2×3, similarity-like) and **homography** (3×3) matrices: shared container API, optional estimation from corresponding points (with inlier **mask**), and registration helpers that normalize raw arrays into the right matrix type.
 
-## Mathematics
-
-### Homogeneous coordinates
-
-Image points use **homogeneous 2D** $(x, y, 1)^\top$. Affine: multiply by the 2×3 matrix. Homography: multiply by $H$, then **dehomogenize** (divide the first two components by the third).
-
-### Affine map (partial)
-
-Estimation uses OpenCV `estimateAffinePartial2D` (rotation, **uniform** scale, translation; 4 DOF). Stored as OpenCV-style 2×3 $A$:
-
-$$
-\begin{bmatrix} x' \\ y' \end{bmatrix} =
-A
-\begin{bmatrix} x \\ y \\ 1 \end{bmatrix} =
-\begin{bmatrix}
-a_{00} & a_{01} & a_{02} \\
-a_{10} & a_{11} & a_{12}
-\end{bmatrix}
-\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}.
-$$
-
-### Homography map
-
-3×3 $H$ (defined up to a non-zero scalar):
-
-$$
-\begin{bmatrix} x' \\ y' \\ w' \end{bmatrix}
-\sim
-H
-\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
-\sim
-\begin{bmatrix}
-h_{00} & h_{01} & h_{02} \\
-h_{10} & h_{11} & h_{12} \\
-h_{20} & h_{21} & h_{22}
-\end{bmatrix}
-\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}.
-$$
-
-### Partial affine vs. homography
-
-| | Partial affine (`AffineMatrix`) | Homography (`HomographyMatrix`) |
-|--|--------------------------------|--------------------------------|
-| OpenCV estimator | `estimateAffinePartial2D` | `findHomography` |
-| Matrix shape | 2×3 | 3×3 |
-| Translation | ✅ | ✅ |
-| Rotation | ✅ | ✅ |
-| Uniform scaling | ✅ | ✅ (as part of full 2×2 linear map) |
-| Non-uniform scale / independent shear | ❌ | ✅ |
-| Perspective (foreshortening) | ❌ | ✅ |
-| Parallelism preserved | ✅ | ❌ (in general) |
-| Degrees of freedom | 4 | 8 |
-| Min. point pairs (`create_from_points`) | ≥4 (validated) | ≥4 (validated) |
-
 ## Components
 
 | Component | Description |
@@ -70,7 +16,7 @@ $$
 | [affine/](./affine/README.md) | Partial affine (`AffineMatrix`, 2×3) implementation package |
 | [homography/](./homography/README.md) | Homography (`HomographyMatrix`, 3×3) implementation package |
 
-## Example
+## Examples
 
 Wrap a matrix with `register_perspective_matrix` (or estimate from point pairs with `PerspectiveMatrix.from_points`), then map 2D points with `projective_transformation`. Estimators return `(matrix, mask)` like `EssentialMatrix.from_points` / `FundamentalMatrix.from_points`.
 

@@ -12,7 +12,7 @@ Pytest suite for `projective` perspective transforms (homography and affine).
 | [test_homography_projective.py](./test_homography_projective.py) | `HomographyMatrix.projective_transformation` |
 | [test_affine_projective.py](./test_affine_projective.py) | `AffineMatrix.projective_transformation` |
 
-## Usage/Examples
+## Examples
 
 ```bash
 uv run pytest
