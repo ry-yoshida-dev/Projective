@@ -9,7 +9,12 @@ from ....types import FloatArray
 class HomographyInverseProtocol(Protocol):
     """Homography container that exposes a cached matrix inverse."""
 
-    value: FloatArray
+    @property
+    def value(self) -> FloatArray:
+        """Return the homography matrix with shape (3, 3)."""
+        ...
 
     @cached_property
-    def inverse(self) -> FloatArray: ...
+    def inverse(self) -> FloatArray:
+        """Return the inverse homography matrix with shape (3, 3)."""
+        ...

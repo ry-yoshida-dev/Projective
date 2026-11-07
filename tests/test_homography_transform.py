@@ -17,7 +17,7 @@ def test_create_identity_matrix_is_3x3() -> None:
 
 def test_invalid_shape_raises() -> None:
     with pytest.raises(ValueError, match="3x3"):
-        HomographyMatrix(value=np.eye(2))
+        _ = HomographyMatrix(value=np.eye(2))
 
 
 def test_inverse_matches_numpy_linalg_inv() -> None:

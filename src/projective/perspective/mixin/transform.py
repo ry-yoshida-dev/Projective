@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from ...types import FloatArray
 
@@ -49,7 +48,8 @@ class PerspectiveTransformMixin(ABC):
         tuple[int, int]
             Two-dimensional shape of value.
         """
-        return self.value.shape
+        # Concrete matrices validate that value is two-dimensional.
+        return cast(tuple[int, int], self.value.shape)
 
     @property
     def flatten(self) -> FloatArray:

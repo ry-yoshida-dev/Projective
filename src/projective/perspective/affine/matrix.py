@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
 from dataclasses import dataclass
+
+import numpy as np
+from typing_extensions import override
 
 from ...types import FloatArray
 from ..matrix import PerspectiveMatrix
@@ -23,7 +25,7 @@ class AffineMatrix(
     """
     AffineMatrix is a class that represents an affine transformation matrix.
 
-    Attributes:
+    Attributes
     ----------
     value: FloatArray
         The affine transformation matrix with shape (2, 3).
@@ -38,9 +40,12 @@ class AffineMatrix(
         ValueError: If the affine transformation matrix is not a 2x3 matrix.
         """
         if self.value.shape != (2, 3):
-            raise ValueError(f"Affine matrix must be a 2x3 matrix, got shape {self.value.shape}")
+            raise ValueError(
+                f"Affine matrix must be a 2x3 matrix, got shape {self.value.shape}"
+            )
 
     @property
+    @override
     def translation(self) -> FloatArray:
         """
         Return the translation vector (tx, ty).
@@ -53,6 +58,7 @@ class AffineMatrix(
         return self.value[:, 2]
 
     @property
+    @override
     def shear(self) -> FloatArray:
         """
         Return shear factors along x and y axes.
@@ -66,8 +72,10 @@ class AffineMatrix(
         FloatArray:
             The shear factors (sx, sy) with shape (2,).
         """
-        a, b = self.value[0, :2]
-        c, d = self.value[1, :2]
+        a = self.value.item(0, 0)
+        b = self.value.item(0, 1)
+        c = self.value.item(1, 0)
+        d = self.value.item(1, 1)
         sx2 = a**2 + c**2
         sy2 = b**2 + d**2
 
@@ -76,6 +84,7 @@ class AffineMatrix(
         return np.array([shear_x, shear_y])
 
     @property
+    @override
     def has_perspective(self) -> bool:
         """
         Return True if the affine matrix has a perspective component.
@@ -88,5 +97,14 @@ class AffineMatrix(
         return False
 
     @property
+    @override
     def transform_type(self) -> PerspectiveTransformationMethod:
+        """
+        Return the affine transformation type.
+
+        Returns
+        -------
+        PerspectiveTransformationMethod
+            Always ``PerspectiveTransformationMethod.AFFINE``.
+        """
         return PerspectiveTransformationMethod.AFFINE

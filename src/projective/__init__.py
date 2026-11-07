@@ -1,3 +1,4 @@
+from opencv_utility import OpenCVOutlierFilteringFlag
 
 from .essential_matrix import EssentialMatrix
 from .fundamental_matrix import FundamentalMatrix
@@ -8,15 +9,14 @@ from .perspective import (
     PerspectiveTransformationMethod,
     register_perspective_matrix,
 )
-from opencv_utility import OpenCVOutlierFilteringFlag
 
 __all__ = [
     "FundamentalMatrix",
     "EssentialMatrix",
-    "register_perspective_matrix", 
-    "PerspectiveMatrix", 
-    "PerspectiveTransformationMethod", 
+    "register_perspective_matrix",
+    "PerspectiveMatrix",
+    "PerspectiveTransformationMethod",
     "HomographyMatrix",
     "AffineMatrix",
     "OpenCVOutlierFilteringFlag",
-    ]
+]

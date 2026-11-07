@@ -1,23 +1,25 @@
 from __future__ import annotations
 
-import cv2
 from dataclasses import dataclass
 from typing import cast
 
+import cv2
 from opencv_utility import OpenCVOutlierFilteringFlag
 
 from .types import FloatArray, MaskArray
+
 
 @dataclass(frozen=True)
 class EssentialMatrix:
     """
     EssentialMatrix is a class that represents an essential matrix.
 
-    Attributes:
+    Attributes
     ----------
     value: FloatArray
         The essential matrix with shape (3, 3).
     """
+
     value: FloatArray
 
     def __post_init__(self) -> None:
@@ -61,7 +63,9 @@ class EssentialMatrix:
         if points1.shape != points2.shape:
             raise ValueError("Points1 and points2 must have the same shape")
         if points1.shape[0] < 5:
-            raise ValueError("At least 5 points are required to estimate an essential matrix")
+            raise ValueError(
+                "At least 5 points are required to estimate an essential matrix"
+            )
         if intrinsic_matrix.shape != (3, 3):
             raise ValueError("Intrinsic matrix must be a 3x3 matrix")
 
@@ -77,4 +81,3 @@ class EssentialMatrix:
             ),
         )
         return cls(value=E), e_mask
-

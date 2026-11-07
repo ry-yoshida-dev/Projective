@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-import numpy as np
 from functools import cached_property
 from typing import TYPE_CHECKING
+
+import numpy as np
+from typing_extensions import override
 
 from ....types import FloatArray
 from ...mixin.transform import PerspectiveTransformMixin
@@ -15,6 +17,7 @@ class HomographyTransformMixin(PerspectiveTransformMixin):
     """Transform the homography matrix container itself."""
 
     @property
+    @override
     def column_vector(self) -> FloatArray:
         """
         Return the column vector of a 3×3 homography matrix.
@@ -27,6 +30,7 @@ class HomographyTransformMixin(PerspectiveTransformMixin):
         return super().column_vector
 
     @property
+    @override
     def row_vector(self) -> FloatArray:
         """
         Return the row vector of a 3×3 homography matrix.
@@ -39,6 +43,7 @@ class HomographyTransformMixin(PerspectiveTransformMixin):
         return super().row_vector
 
     @property
+    @override
     def shape(self) -> tuple[int, int]:
         """
         Return the shape of the homography matrix.
@@ -51,6 +56,7 @@ class HomographyTransformMixin(PerspectiveTransformMixin):
         return super().shape
 
     @property
+    @override
     def flatten(self) -> FloatArray:
         """
         Return the flattened homography matrix.
@@ -86,6 +92,7 @@ class HomographyTransformMixin(PerspectiveTransformMixin):
         """
         return self.value.T
 
+    @override
     def scale_correction(self, scale: float) -> HomographyMatrix:
         """
         Correct the scale of the homography matrix.

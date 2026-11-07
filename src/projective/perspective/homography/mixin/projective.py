@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
-from typing import Callable
+from typing_extensions import override
 
 from ....types import FloatArray
 from ...mixin.projective import PerspectiveProjectiveMixin
@@ -13,6 +15,7 @@ class HomographyProjectiveMixin(PerspectiveProjectiveMixin):
 
     value: FloatArray
 
+    @override
     def projective_transformation(
         self: HomographyInverseProtocol,
         points: FloatArray,

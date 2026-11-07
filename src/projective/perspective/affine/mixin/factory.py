@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import cv2
-import numpy as np
 from typing import TYPE_CHECKING, cast
 
+import cv2
+import numpy as np
 from opencv_utility import OpenCVOutlierFilteringFlag
+from typing_extensions import override
 
 from ....types import FloatArray, MaskArray
 from ...mixin.factory import PerspectiveFactoryMixin
@@ -17,6 +18,7 @@ class AffineFactoryMixin(PerspectiveFactoryMixin):
     """Factory methods for affine matrix estimation."""
 
     @classmethod
+    @override
     def create_identity_matrix(cls) -> AffineMatrix:
         """
         Create an identity affine matrix.
@@ -31,6 +33,7 @@ class AffineFactoryMixin(PerspectiveFactoryMixin):
         return _AffineMatrix(value=np.eye(2, 3))
 
     @classmethod
+    @override
     def create_from_points(
         cls,
         origin_points: FloatArray,

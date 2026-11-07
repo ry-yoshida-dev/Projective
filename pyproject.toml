@@ -23,6 +23,7 @@ dependencies = [
     "numpy",
     "opencv-contrib-python",
     "opencv-utility @ git+https://github.com/ry-yoshida-dev/OpenCVUtility.git",
+    "typing-extensions>=4.4",
 ]
 
 [project.urls]
@@ -37,8 +38,15 @@ projective = ["py.typed"]
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.3",
+    "basedpyright>=1.40.2",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
 ]
+
+[tool.mypy]
+files = ["src", "tests"]
+strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -46,3 +54,23 @@ pythonpath = ["src"]
 
 [tool.uv]
 exclude-newer = "7 days"
+
+[tool.basedpyright]
+# PerspectiveMatrix.from_points dispatches to its concrete subclasses, and the
+# concrete mixins construct their own matrix class, so the package has import
+# cycles by design. Removing them requires restructuring the public API.
+reportImportCycles = false
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "D"]
+# Only public classes, methods, and functions need docstrings, and multi-line ones are the local style.
+ignore = ["E501", "D100", "D104", "D105", "D200"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]

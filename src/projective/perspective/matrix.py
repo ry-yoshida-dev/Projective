@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-import numpy as np
+import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+
+import numpy as np
+from typing_extensions import override
 
 from ..types import FloatArray
 from .method import PerspectiveTransformationMethod
@@ -26,11 +29,12 @@ class PerspectiveMatrix(
     This class provides a unified interface for both affine and homography transformations,
     automatically selecting the appropriate matrix type based on the input.
 
-    Attributes:
+    Attributes
     ----------
     value: FloatArray
         The perspective transformation matrix with shape (N, M).
     """
+
     value: FloatArray
 
     @property
@@ -54,12 +58,12 @@ class PerspectiveMatrix(
         a, b = H[0,0], H[0,1] (or A[0,0], A[0,1])
         c, d = H[1,0], H[1,1] (or A[1,0], A[1,1])
         """
-        a, _ = self.value[0, :2]  # a, b: float
-        c, _ = self.value[1, :2]  # c, d: float
-        sx = np.hypot(a, c)
+        a = self.value.item(0, 0)
+        c = self.value.item(1, 0)
+        sx = math.hypot(a, c)
         if sx == 0:
             return 0.0
-        return float(np.arctan2(c / sx, a / sx))
+        return math.atan2(c / sx, a / sx)
 
     @property
     def scale(self) -> FloatArray:
@@ -74,11 +78,11 @@ class PerspectiveMatrix(
         FloatArray:
             The scale factors with shape (2,).
         """
-        a, b = self.value[0, :2]
-        c, d = self.value[1, :2]
-        sx = np.hypot(a, c)
-        sy = np.hypot(b, d)
-        return np.array([sx, sy])
+        a = self.value.item(0, 0)
+        b = self.value.item(0, 1)
+        c = self.value.item(1, 0)
+        d = self.value.item(1, 1)
+        return np.array([math.hypot(a, c), math.hypot(b, d)])
 
     @property
     @abstractmethod
@@ -104,6 +108,7 @@ class PerspectiveMatrix(
             True if the transformation has perspective components, False otherwise.
         """
 
+    @override
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(value.shape={self.value.shape}, transform_type={self.transform_type})"
 

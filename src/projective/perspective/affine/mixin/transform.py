@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
 from typing import TYPE_CHECKING
+
+import numpy as np
+from typing_extensions import override
 
 from ....types import FloatArray
 from ...mixin.transform import PerspectiveTransformMixin
@@ -14,6 +16,7 @@ class AffineTransformMixin(PerspectiveTransformMixin):
     """Transform the affine matrix container itself."""
 
     @property
+    @override
     def column_vector(self) -> FloatArray:
         """
         Return the column vector of a 2×3 affine matrix.
@@ -26,6 +29,7 @@ class AffineTransformMixin(PerspectiveTransformMixin):
         return super().column_vector
 
     @property
+    @override
     def row_vector(self) -> FloatArray:
         """
         Return the row vector of a 2×3 affine matrix.
@@ -38,6 +42,7 @@ class AffineTransformMixin(PerspectiveTransformMixin):
         return super().row_vector
 
     @property
+    @override
     def shape(self) -> tuple[int, int]:
         """
         Return the shape of the affine matrix.
@@ -50,6 +55,7 @@ class AffineTransformMixin(PerspectiveTransformMixin):
         return super().shape
 
     @property
+    @override
     def flatten(self) -> FloatArray:
         """
         Return the flattened affine matrix.
@@ -61,6 +67,7 @@ class AffineTransformMixin(PerspectiveTransformMixin):
         """
         return super().flatten
 
+    @override
     def scale_correction(
         self,
         scale: float,

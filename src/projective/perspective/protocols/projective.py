@@ -15,4 +15,6 @@ class PerspectiveProjectiveProtocol(Protocol):
         points: FloatArray,
         is_inverse: bool = False,
         up_axis_index: int = 2,
-    ) -> FloatArray: ...
+    ) -> FloatArray:
+        """Project 2D points of shape (N, 2) or (N, 3) to shape (N, 2)."""
+        ...

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import cv2
-import numpy as np
 from typing import TYPE_CHECKING, cast
 
+import cv2
+import numpy as np
 from opencv_utility import OpenCVOutlierFilteringFlag
+from typing_extensions import override
 
 from ....types import FloatArray, MaskArray
 from ...mixin.factory import PerspectiveFactoryMixin
@@ -17,6 +18,7 @@ class HomographyFactoryMixin(PerspectiveFactoryMixin):
     """Factory methods for homography matrix estimation."""
 
     @classmethod
+    @override
     def create_identity_matrix(cls) -> HomographyMatrix:
         """
         Create an identity homography matrix.
@@ -51,9 +53,10 @@ class HomographyFactoryMixin(PerspectiveFactoryMixin):
             raise ValueError("Unnormalized value must be a 3x3 matrix")
         from ..matrix import HomographyMatrix as _HomographyMatrix
 
-        return _HomographyMatrix(value=value / value[2, 2])
+        return _HomographyMatrix(value=value / value.item(2, 2))
 
     @classmethod
+    @override
     def create_from_points(
         cls,
         origin_points: FloatArray,

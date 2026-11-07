@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+from typing_extensions import override
 
 from ....types import FloatArray
 from ...mixin.projective import PerspectiveProjectiveMixin
@@ -11,6 +12,7 @@ class AffineProjectiveMixin(PerspectiveProjectiveMixin):
 
     value: FloatArray
 
+    @override
     def projective_transformation(
         self,
         points: FloatArray,
@@ -36,7 +38,9 @@ class AffineProjectiveMixin(PerspectiveProjectiveMixin):
         """
         del up_axis_index
         if is_inverse:
-            raise ValueError("Inverse transformation is not supported for affine matrix")
+            raise ValueError(
+                "Inverse transformation is not supported for affine matrix"
+            )
         if points.ndim != 2 or points.shape[1] not in (2, 3):
             raise ValueError("Input points must have shape (N, 2) or (N, 3)")
 

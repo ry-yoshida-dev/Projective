@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-import cv2
 from enum import Enum
 from typing import TYPE_CHECKING
 
+import cv2
+
 if TYPE_CHECKING:
     from .matrix import PerspectiveMatrix
+
 
 class PerspectiveTransformationMethod(Enum):
     """
@@ -16,11 +18,20 @@ class PerspectiveTransformationMethod(Enum):
     AFFINE: Uses the affine transformation matrix.
     HOMOGRAPHY: Uses the homography transformation matrix.
     """
+
     AFFINE = "Affine"
     HOMOGRAPHY = "Homography"
 
     @property
     def to_cv2_motion_type(self) -> int:
+        """
+        Return the OpenCV motion type for the transformation method.
+
+        Returns
+        -------
+        int
+            ``cv2.MOTION_AFFINE`` or ``cv2.MOTION_HOMOGRAPHY``.
+        """
         match self:
             case self.AFFINE:
                 return cv2.MOTION_AFFINE
@@ -40,7 +51,9 @@ class PerspectiveTransformationMethod(Enum):
         match self:
             case self.AFFINE:
                 from .affine.matrix import AffineMatrix
+
                 return AffineMatrix
             case self.HOMOGRAPHY:
                 from .homography.matrix import HomographyMatrix
+
                 return HomographyMatrix
