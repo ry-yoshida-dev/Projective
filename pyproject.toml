@@ -10,10 +10,9 @@ authors = [
 ]
 description = "Utilities for projective geometry: epipolar constraints and 2D perspective transforms (affine / homography)."
 readme = "src/projective/README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
@@ -62,7 +61,7 @@ exclude-newer = "7 days"
 reportImportCycles = false
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "D"]
