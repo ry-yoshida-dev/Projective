@@ -8,6 +8,7 @@ from typing import ClassVar, Self
 import numpy as np
 from typing_extensions import override
 
+from ..read_only import read_only_copy
 from ..types import FloatArray
 from .method import PerspectiveTransformationMethod
 from .mixin import PerspectiveFactoryMixin, PerspectiveProjectiveMixin
@@ -39,6 +40,8 @@ class PerspectiveMatrix(PerspectiveFactoryMixin, PerspectiveProjectiveMixin, ABC
             raise ValueError(
                 f"{type(self).__name__} must have shape {self.expected_shape}, got {self.value.shape}"
             )
+        # Store an independent, read-only copy so that the frozen matrix cannot change.
+        object.__setattr__(self, "value", read_only_copy(self.value))
 
     @classmethod
     @override

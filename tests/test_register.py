@@ -35,7 +35,7 @@ def test_array_is_wrapped() -> None:
     value = np.array([[1.0, 0.0, 3.0], [0.0, 1.0, -2.0]])
     matrix = register_perspective_matrix(value, PerspectiveTransformationMethod.AFFINE)
     assert isinstance(matrix, AffineMatrix)
-    assert matrix.value is value
+    np.testing.assert_array_equal(matrix.value, value)
 
 
 def test_array_with_wrong_shape_raises() -> None:

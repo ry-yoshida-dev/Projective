@@ -13,6 +13,7 @@ Pytest suite for `projective`: perspective transforms (homography and affine) an
 | [test_perspective_estimation.py](./test_perspective_estimation.py) | `create_from_points`, input validation, and `EstimationError` |
 | [test_perspective_decomposition.py](./test_perspective_decomposition.py) | Rotation, scale, shear, translation, `has_perspective`, and `repr` |
 | [test_register.py](./test_register.py) | `register_perspective_matrix` |
+| [test_read_only.py](./test_read_only.py) | Matrix containers hold an independent, read-only copy of `value` |
 | [test_epipolar.py](./test_epipolar.py) | `EssentialMatrix` and `FundamentalMatrix` |
 
 ## Examples

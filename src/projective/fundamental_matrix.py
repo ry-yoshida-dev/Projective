@@ -7,6 +7,7 @@ import cv2
 from opencv_utility import OpenCVOutlierFilteringFlag
 
 from .estimation_error import EstimationError
+from .read_only import read_only_copy
 from .types import FloatArray, MaskArray
 
 
@@ -26,6 +27,8 @@ class FundamentalMatrix:
     def __post_init__(self) -> None:
         if self.value.shape != (3, 3):
             raise ValueError("Fundamental matrix must be a 3x3 matrix")
+        # Store an independent, read-only copy so that the frozen matrix cannot change.
+        object.__setattr__(self, "value", read_only_copy(self.value))
 
     @classmethod
     def from_points(

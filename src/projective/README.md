@@ -9,6 +9,7 @@ Utilities for **projective geometry**: epipolar constraints at the package root 
 | Component | Description |
 |-----------|-------------|
 | [estimation_error.py](./estimation_error.py) | `EstimationError` raised when OpenCV cannot estimate a matrix |
+| [read_only.py](./read_only.py) | `read_only_copy` used by matrix containers to store an independent, read-only `value` |
 | [types.py](./types.py) | Shared NumPy type aliases (`FloatArray` for float32/float64, `MaskArray` for uint8) |
 | [perspective/](./perspective/README.md) | Affine and homography matrices; estimation returns `(matrix, mask)` |
 | [essential_matrix.py](./essential_matrix.py) | Immutable `EssentialMatrix` (3×3) |
