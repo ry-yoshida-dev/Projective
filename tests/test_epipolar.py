@@ -62,7 +62,7 @@ def test_essential_matrix_satisfies_epipolar_constraint(
     intrinsic_inverse = np.linalg.inv(stereo_scene.intrinsic_matrix)
     normalized1 = _homogeneous(stereo_scene.points1) @ intrinsic_inverse.T
     normalized2 = _homogeneous(stereo_scene.points2) @ intrinsic_inverse.T
-    residuals = np.sum((normalized2 @ essential.value) * normalized1, axis=1)
+    residuals = np.diagonal(normalized2 @ essential.value @ normalized1.T)
     assert mask.shape == (stereo_scene.points1.shape[0], 1)
     assert np.max(np.abs(residuals)) < _EPIPOLAR_TOLERANCE
 
@@ -75,7 +75,7 @@ def test_fundamental_matrix_satisfies_epipolar_constraint(
     )
     homogeneous1 = _homogeneous(stereo_scene.points1)
     homogeneous2 = _homogeneous(stereo_scene.points2)
-    residuals = np.sum((homogeneous2 @ fundamental.value) * homogeneous1, axis=1)
+    residuals = np.diagonal(homogeneous2 @ fundamental.value @ homogeneous1.T)
     assert mask.shape == (stereo_scene.points1.shape[0], 1)
     assert np.max(np.abs(residuals)) < _EPIPOLAR_TOLERANCE
 
