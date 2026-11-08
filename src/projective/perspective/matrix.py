@@ -119,7 +119,7 @@ class PerspectiveMatrix(PerspectiveFactoryMixin, PerspectiveProjectiveMixin, ABC
         FloatArray
             The scale factors with shape (2,).
         """
-        return np.linalg.norm(self.linear_part, axis=0)
+        return np.asarray(np.linalg.norm(self.linear_part, axis=0), dtype=np.float64)
 
     @property
     def shear(self) -> FloatArray:
