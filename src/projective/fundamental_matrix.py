@@ -6,6 +6,7 @@ from typing import cast
 import cv2
 from opencv_utility import OpenCVOutlierFilteringFlag
 
+from .estimation_error import EstimationError
 from .types import FloatArray, MaskArray
 
 
@@ -51,6 +52,13 @@ class FundamentalMatrix:
         Returns
         -------
         tuple[FundamentalMatrix, MaskArray]: The fundamental matrix and the mask.
+
+        Raises
+        ------
+        ValueError
+            If the points are not (N, 2), differ in shape, or are fewer than 8.
+        EstimationError
+            If OpenCV cannot estimate a fundamental matrix from the points.
         """
         if points1.shape != points2.shape:
             raise ValueError(
@@ -68,7 +76,7 @@ class FundamentalMatrix:
             )
 
         F, mask = cast(
-            tuple[FloatArray, MaskArray],
+            tuple[FloatArray | None, MaskArray | None],
             cv2.findFundamentalMat(
                 points1,
                 points2,
@@ -76,4 +84,6 @@ class FundamentalMatrix:
                 ransac_th,
             ),
         )
+        if F is None or mask is None:
+            raise EstimationError("cv2.findFundamentalMat could not estimate a matrix")
         return cls(value=F), mask

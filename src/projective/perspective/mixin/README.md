@@ -2,12 +2,12 @@
 
 ## Overview
 
-Abstract mixins for `PerspectiveMatrix`: estimation from point pairs, matrix self-transformation, and 2D point projection.
+Mixins that `PerspectiveMatrix` combines, split by concern. Each is written once for every matrix type on top of the 3×3 homogeneous form.
 
 ## Components
 
 | Component | Description |
 |-----------|-------------|
-| [factory.py](./factory.py) | `PerspectiveFactoryMixin` — point validation and `from_points` dispatch |
-| [transform.py](./transform.py) | `PerspectiveTransformMixin` — generic container views and `scale_correction` |
+| [transform.py](./transform.py) | `PerspectiveTransformMixin` — array views (`T`, `flatten`, `column_vector`, `row_vector`), homogeneous conversion, `inverse`, `normalized`, `scale_correction` |
 | [projective.py](./projective.py) | `PerspectiveProjectiveMixin` — `projective_transformation` for 2D points |
+| [factory.py](./factory.py) | `PerspectiveFactoryMixin` — `create_identity_matrix` and `create_from_points` |

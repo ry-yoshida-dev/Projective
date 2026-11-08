@@ -1,5 +1,4 @@
-from .affine.matrix import AffineMatrix
-from .homography.matrix import HomographyMatrix
+from .matrices import AffineMatrix, HomographyMatrix
 from .matrix import PerspectiveMatrix
 from .method import PerspectiveTransformationMethod
 from .register import register_perspective_matrix

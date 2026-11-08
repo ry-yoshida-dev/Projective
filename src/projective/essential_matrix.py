@@ -6,6 +6,7 @@ from typing import cast
 import cv2
 from opencv_utility import OpenCVOutlierFilteringFlag
 
+from .estimation_error import EstimationError
 from .types import FloatArray, MaskArray
 
 
@@ -59,6 +60,13 @@ class EssentialMatrix:
         tuple[EssentialMatrix, MaskArray]:
             - EssentialMatrix: The estimated essential matrix.
             - MaskArray: The mask of the estimated essential matrix.
+
+        Raises
+        ------
+        ValueError
+            If the points or the intrinsic matrix have invalid shapes.
+        EstimationError
+            If OpenCV cannot estimate an essential matrix from the points.
         """
         if points1.shape != points2.shape:
             raise ValueError("Points1 and points2 must have the same shape")
@@ -70,7 +78,7 @@ class EssentialMatrix:
             raise ValueError("Intrinsic matrix must be a 3x3 matrix")
 
         E, e_mask = cast(
-            tuple[FloatArray, MaskArray],
+            tuple[FloatArray | None, MaskArray | None],
             cv2.findEssentialMat(
                 points1=points1,
                 points2=points2,
@@ -80,4 +88,6 @@ class EssentialMatrix:
                 threshold=threshold,
             ),
         )
+        if E is None or e_mask is None:
+            raise EstimationError("cv2.findEssentialMat could not estimate a matrix")
         return cls(value=E), e_mask

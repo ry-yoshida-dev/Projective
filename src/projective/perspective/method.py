@@ -50,10 +50,10 @@ class PerspectiveTransformationMethod(Enum):
         """
         match self:
             case self.AFFINE:
-                from .affine.matrix import AffineMatrix
+                from .matrices.affine import AffineMatrix
 
                 return AffineMatrix
             case self.HOMOGRAPHY:
-                from .homography.matrix import HomographyMatrix
+                from .matrices.homography import HomographyMatrix
 
                 return HomographyMatrix

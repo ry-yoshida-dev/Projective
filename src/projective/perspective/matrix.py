@@ -3,114 +3,47 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import ClassVar, Self
 
 import numpy as np
 from typing_extensions import override
 
 from ..types import FloatArray
 from .method import PerspectiveTransformationMethod
-from .mixin import (
-    PerspectiveFactoryMixin,
-    PerspectiveProjectiveMixin,
-    PerspectiveTransformMixin,
-)
+from .mixin import PerspectiveFactoryMixin, PerspectiveProjectiveMixin
 
 
 @dataclass(frozen=True)
-class PerspectiveMatrix(
-    PerspectiveFactoryMixin,
-    PerspectiveTransformMixin,
-    PerspectiveProjectiveMixin,
-    ABC,
-):
+class PerspectiveMatrix(PerspectiveFactoryMixin, PerspectiveProjectiveMixin, ABC):
     """
-    Container class for perspective transformation matrices.
+    2D perspective transformation matrix.
 
-    This class provides a unified interface for both affine and homography transformations,
-    automatically selecting the appropriate matrix type based on the input.
+    Every operation works on the 3×3 ``homogeneous`` form of the matrix,
+    so concrete classes only define their stored shape, how they convert to and from
+    the homogeneous form, and which OpenCV estimator fits them to points.
+    Container operations, point mapping, and estimation live in the mixins;
+    this class adds shape validation and decomposition into rotation, scale, and shear.
 
     Attributes
     ----------
     value: FloatArray
-        The perspective transformation matrix with shape (N, M).
+        The stored matrix with shape ``expected_shape``.
     """
+
+    expected_shape: ClassVar[tuple[int, int]]
 
     value: FloatArray
 
-    @property
-    @abstractmethod
-    def translation(self) -> FloatArray:
-        """
-        Get the translation component of the transformation.
+    def __post_init__(self) -> None:
+        if self.value.shape != self.expected_shape:
+            raise ValueError(
+                f"{type(self).__name__} must have shape {self.expected_shape}, got {self.value.shape}"
+            )
 
-        Returns
-        -------
-        FloatArray:
-            The translation component of the transformation with shape (2,).
-        """
-
-    @property
-    def rotation(self) -> float:
-        """
-        Return the rotation angle in radians, normalized by scale.
-
-        Calculated from the linear transformation components:
-        a, b = H[0,0], H[0,1] (or A[0,0], A[0,1])
-        c, d = H[1,0], H[1,1] (or A[1,0], A[1,1])
-        """
-        a = self.value.item(0, 0)
-        c = self.value.item(1, 0)
-        sx = math.hypot(a, c)
-        if sx == 0:
-            return 0.0
-        return math.atan2(c / sx, a / sx)
-
-    @property
-    def scale(self) -> FloatArray:
-        """
-        Return the scale factors (sx, sy).
-
-        Calculated from the linear transformation components:
-        sx = sqrt(a² + c²), sy = sqrt(b² + d²)
-
-        Returns
-        -------
-        FloatArray:
-            The scale factors with shape (2,).
-        """
-        a = self.value.item(0, 0)
-        b = self.value.item(0, 1)
-        c = self.value.item(1, 0)
-        d = self.value.item(1, 1)
-        return np.array([math.hypot(a, c), math.hypot(b, d)])
-
-    @property
-    @abstractmethod
-    def shear(self) -> FloatArray:
-        """
-        Get the shear factors.
-
-        Returns
-        -------
-        FloatArray:
-            The shear factors with shape (2,).
-        """
-
-    @property
-    @abstractmethod
-    def has_perspective(self) -> bool:
-        """
-        Check if the transformation has perspective components.
-
-        Returns
-        -------
-        bool:
-            True if the transformation has perspective components, False otherwise.
-        """
-
+    @classmethod
     @override
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(value.shape={self.value.shape}, transform_type={self.transform_type})"
+    def _from_value(cls, value: FloatArray) -> Self:
+        return cls(value=value)
 
     @property
     @abstractmethod
@@ -123,3 +56,107 @@ class PerspectiveMatrix(
         PerspectiveTransformationMethod:
             The type of the transformation.
         """
+
+    @property
+    def linear_part(self) -> FloatArray:
+        """
+        Return the linear part [[a, b], [c, d]] normalized by H[2, 2].
+
+        Returns
+        -------
+        FloatArray
+            The linear part with shape (2, 2).
+
+        Raises
+        ------
+        ValueError
+            If H[2, 2] is zero.
+        """
+        return self._normalized_homogeneous[:2, :2]
+
+    @property
+    def translation(self) -> FloatArray:
+        """
+        Return the translation (tx, ty) normalized by H[2, 2].
+
+        This is exact only when the matrix has no perspective component.
+
+        Returns
+        -------
+        FloatArray
+            The translation with shape (2,).
+
+        Raises
+        ------
+        ValueError
+            If H[2, 2] is zero.
+        """
+        return self._normalized_homogeneous[:2, 2]
+
+    @property
+    def rotation(self) -> float:
+        """
+        Return the rotation angle in radians from the first column (a, c) of the linear part.
+
+        Returns
+        -------
+        float
+            The rotation angle, or 0.0 when the first column is zero.
+        """
+        a = float(self.linear_part.item(0, 0))
+        c = float(self.linear_part.item(1, 0))
+        if a == 0 and c == 0:
+            return 0.0
+        return math.atan2(c, a)
+
+    @property
+    def scale(self) -> FloatArray:
+        """
+        Return the scale factors sx = sqrt(a² + c²) and sy = sqrt(b² + d²).
+
+        Returns
+        -------
+        FloatArray
+            The scale factors with shape (2,).
+        """
+        return np.linalg.norm(self.linear_part, axis=0)
+
+    @property
+    def shear(self) -> FloatArray:
+        """
+        Return the shear factors (ab + cd) / (a² + c²) and (ab + cd) / (b² + d²).
+
+        A factor is 0 when its column of the linear part is zero.
+
+        Returns
+        -------
+        FloatArray
+            The shear factors with shape (2,).
+        """
+        linear = self.linear_part
+        a = float(linear.item(0, 0))
+        b = float(linear.item(0, 1))
+        c = float(linear.item(1, 0))
+        d = float(linear.item(1, 1))
+        column_dot = a * b + c * d
+        squared_norm_x = a**2 + c**2
+        squared_norm_y = b**2 + d**2
+        shear_x = column_dot / squared_norm_x if squared_norm_x != 0 else 0.0
+        shear_y = column_dot / squared_norm_y if squared_norm_y != 0 else 0.0
+        return np.array([shear_x, shear_y])
+
+    @property
+    def has_perspective(self) -> bool:
+        """
+        Return True if the perspective components H[2, 0] or H[2, 1] are non-zero.
+
+        Returns
+        -------
+        bool
+            True if the transformation is not affine.
+        """
+        return not np.allclose(self.homogeneous[2, :2], 0)
+
+    @override
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(value.shape={self.value.shape}, transform_type={self.transform_type})"

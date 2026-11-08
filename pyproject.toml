@@ -57,9 +57,9 @@ pythonpath = ["src"]
 exclude-newer = "7 days"
 
 [tool.basedpyright]
-# PerspectiveMatrix.from_points dispatches to its concrete subclasses, and the
-# concrete mixins construct their own matrix class, so the package has import
-# cycles by design. Removing them requires restructuring the public API.
+# PerspectiveMatrix.from_points and transform_type tie the matrix classes to
+# PerspectiveTransformationMethod, which maps back to the concrete classes,
+# so the package has import cycles by design.
 reportImportCycles = false
 
 [tool.ruff]
